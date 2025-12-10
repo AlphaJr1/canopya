@@ -1,6 +1,8 @@
-# Aeropon - Sistem Chatbot Hidroponik/Aquaponik Cerdas
+# 🌳 Canopya - AI-Powered Smart Hydroponics Assistant
 
-Sistem lengkap chatbot berbasis AI untuk monitoring dan konsultasi sistem hidroponik/aquaponik dengan integrasi WhatsApp, IoT simulator, dan RAG (Retrieval-Augmented Generation).
+> Your digital canopy for smart growing
+
+Sistem lengkap chatbot berbasis AI untuk monitoring dan konsultasi sistem hidroponik dengan integrasi WhatsApp, IoT simulator, dan RAG (Retrieval-Augmented Generation). Canopya hadir sebagai asisten cerdas untuk urban farmers dan home growers.
 
 ---
 
@@ -22,7 +24,7 @@ Sistem lengkap chatbot berbasis AI untuk monitoring dan konsultasi sistem hidrop
 
 ## 🎯 Gambaran Umum
 
-Aeropon adalah sistem chatbot cerdas yang menggabungkan:
+**Canopya** adalah sistem chatbot cerdas yang menggabungkan:
 
 - **AI Chatbot** dengan RAG Engine untuk menjawab pertanyaan tentang hidroponik/aquaponik
 - **Rule-Based Engine** untuk diagnostik sensor (pH, TDS, suhu, kelembapan)
@@ -542,7 +544,8 @@ pip3 install virtualenv
 ### 1. Clone Repository
 
 ```bash
-cd /Users/adrianalfajri/Projects/aeropon
+git clone https://github.com/AlphaJr1/canopya.git
+cd canopya
 ```
 
 ### 2. Setup Python Environment
@@ -680,7 +683,7 @@ tail -f logs/whatsapp.log
 ## 📁 Struktur Project
 
 ```
-aeropon/
+canopya/
 ├── api/                          # FastAPI application
 │   ├── main.py                   # Main server
 │   ├── test_client.py            # Test client
