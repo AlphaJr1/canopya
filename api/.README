@@ -1,0 +1,51 @@
+# Aeropon API Directory
+
+Berisi FastAPI server untuk akses Aeropon Hybrid Chatbot.
+
+## Quick Start
+
+```bash
+# 1. Install dependencies (jika belum)
+pip install fastapi uvicorn[standard]
+
+# 2. Start server
+./start_server.sh
+
+# Atau manual:
+python main.py
+```
+
+Server akan berjalan di: http://localhost:8000
+
+## Files
+
+- `main.py` - FastAPI application
+- `start_server.sh` - Script untuk start server
+- `test_client.py` - Python test client
+- `examples.sh` - cURL examples
+- `requirements.txt` - API dependencies
+- `README.md` - Full documentation
+
+## API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/` | Root endpoint |
+| GET | `/health` | Health check |
+| GET | `/stats` | System statistics |
+| POST | `/chat` | Chat dengan bot |
+| POST | `/diagnose` | Diagnostik sensor |
+| GET | `/docs` | Swagger UI |
+| GET | `/redoc` | ReDoc |
+
+## Testing
+
+```bash
+# Python client
+python test_client.py
+
+# cURL examples
+source examples.sh
+```
+
+Lihat `README.md` untuk dokumentasi lengkap.

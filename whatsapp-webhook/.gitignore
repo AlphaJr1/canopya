@@ -1,0 +1,32 @@
+# WhatsApp Webhook - Ignore Files
+
+# Dependencies
+node_modules/
+package-lock.json
+
+# Logs
+logs/*.log
+
+# WhatsApp Auth (SENSITIVE!)
+auth_info/
+
+# Conversations (contains user data)
+conversations/*.json
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment
+.env
+.env.local
+
+# Temporary files
+*.tmp
+*.temp

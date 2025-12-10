@@ -1,0 +1,541 @@
+# ============================================================================
+# .gitignore untuk Aeropon Project
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# Python
+# ----------------------------------------------------------------------------
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# PEP 582
+__pypackages__/
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# ----------------------------------------------------------------------------
+# Virtual Environments
+# ----------------------------------------------------------------------------
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# ----------------------------------------------------------------------------
+# IDE & Editors
+# ----------------------------------------------------------------------------
+# VSCode
+.vscode/
+*.code-workspace
+
+# PyCharm
+.idea/
+*.iml
+*.iws
+.idea_modules/
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+.vim/
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# ----------------------------------------------------------------------------
+# OS Generated Files
+# ----------------------------------------------------------------------------
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+*~
+.directory
+.Trash-*
+.nfs*
+
+# ----------------------------------------------------------------------------
+# AI Assistant Folders (TIDAK UNTUK PUBLISH)
+# ----------------------------------------------------------------------------
+.agent/
+.claude/
+.cursor/
+.aider/
+
+# ----------------------------------------------------------------------------
+# Documentation (TIDAK UNTUK PUBLISH - Internal Only)
+# ----------------------------------------------------------------------------
+docs/
+QUICK_REFERENCE.md
+
+# Kecuali README utama
+!README.md
+
+# ----------------------------------------------------------------------------
+# Utilities (TIDAK UNTUK PUBLISH - Development Only)
+# ----------------------------------------------------------------------------
+utils/
+scripts/
+
+# Kecuali scripts yang essential untuk production
+!scripts/migration/
+!scripts/admin/set_admin.py
+
+# ----------------------------------------------------------------------------
+# Machine Learning Models (Large Files - TIDAK UNTUK PUBLISH)
+# ----------------------------------------------------------------------------
+models/
+!models/.gitkeep
+!models/README.md
+
+# Jika ada model kecil yang perlu di-commit, uncomment:
+# !models/small_model.pkl
+
+# ----------------------------------------------------------------------------
+# Data Files (TIDAK UNTUK PUBLISH)
+# ----------------------------------------------------------------------------
+data/
+!data/.gitkeep
+!data/README.md
+
+# Kecuali sample data untuk testing
+!data/sample/
+
+# Specific data patterns
+*.csv
+*.json
+*.pkl
+*.pickle
+*.npy
+*.npz
+*.h5
+*.hdf5
+
+# Kecuali config files yang diperlukan
+!config.json
+!package.json
+!package-lock.json
+!tsconfig.json
+
+# ----------------------------------------------------------------------------
+# Qdrant Vector Database (TIDAK UNTUK PUBLISH)
+# ----------------------------------------------------------------------------
+qdrant_storage/
+!qdrant_storage/.gitkeep
+
+# ----------------------------------------------------------------------------
+# Logs (TIDAK UNTUK PUBLISH)
+# ----------------------------------------------------------------------------
+logs/
+*.log
+*.log.*
+
+# Specific log files di root
+*.pid
+.*.pid
+.ngrok_url
+.ports.info
+
+# Log files di subdirectories
+api/logs/
+simulator/logs/
+whatsapp-webhook/logs/
+
+# ----------------------------------------------------------------------------
+# Database Files (TIDAK UNTUK PUBLISH - Contains User Data)
+# ----------------------------------------------------------------------------
+# SQLite databases
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+
+# Database backups
+*.sql
+*.dump
+
+# Kecuali schema/migration files
+!**/migrations/*.sql
+!**/schema.sql
+
+# ----------------------------------------------------------------------------
+# WhatsApp Webhook (SENSITIVE - TIDAK UNTUK PUBLISH)
+# ----------------------------------------------------------------------------
+# Node modules
+whatsapp-webhook/node_modules/
+
+# WhatsApp authentication (VERY SENSITIVE!)
+whatsapp-webhook/auth_info/
+whatsapp-webhook/creds.json
+
+# Conversation data (Contains User Data)
+whatsapp-webhook/conversations/
+whatsapp-webhook/backups/
+
+# WhatsApp logs
+whatsapp-webhook/logs/
+
+# Kecuali example files
+!whatsapp-webhook/.env.example
+!whatsapp-webhook/README.md
+
+# ----------------------------------------------------------------------------
+# Environment Variables (SENSITIVE - TIDAK UNTUK PUBLISH)
+# ----------------------------------------------------------------------------
+.env
+.env.local
+.env.*.local
+.env.production
+.env.development
+.env.test
+
+# Kecuali example
+!.env.example
+
+# ----------------------------------------------------------------------------
+# Temporary Files
+# ----------------------------------------------------------------------------
+*.tmp
+*.temp
+*.bak
+*.backup
+*.swp
+*.swo
+*~
+.cache/
+.temp/
+tmp/
+temp/
+
+# ----------------------------------------------------------------------------
+# Build & Compiled Files
+# ----------------------------------------------------------------------------
+*.o
+*.a
+*.lib
+*.dll
+*.exe
+*.out
+*.app
+
+# ----------------------------------------------------------------------------
+# Testing (TIDAK UNTUK PUBLISH - Development Only)
+# ----------------------------------------------------------------------------
+tests/
+!tests/__init__.py
+!tests/README.md
+
+# Test coverage
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+.tox/
+
+# ----------------------------------------------------------------------------
+# Benchmarks (TIDAK UNTUK PUBLISH - Development Only)
+# ----------------------------------------------------------------------------
+benchmarks/
+benchmark_results/
+*.benchmark
+
+# ----------------------------------------------------------------------------
+# Ngrok (TIDAK UNTUK PUBLISH)
+# ----------------------------------------------------------------------------
+.ngrok*
+ngrok.yml
+
+# ----------------------------------------------------------------------------
+# Process ID Files (Runtime - TIDAK UNTUK PUBLISH)
+# ----------------------------------------------------------------------------
+*.pid
+.*.pid
+.dashboard.pid
+.database_viewer.pid
+.fastapi.pid
+.ngrok.pid
+.simulator_api.pid
+.simulator_generator.pid
+.whatsapp.pid
+
+# ----------------------------------------------------------------------------
+# Session & Cache Files
+# ----------------------------------------------------------------------------
+.session
+.sessions/
+session_*
+cache/
+.cache/
+
+# ----------------------------------------------------------------------------
+# Backup Files
+# ----------------------------------------------------------------------------
+*.backup
+*.bak
+*_backup
+*_old
+*.orig
+
+# ----------------------------------------------------------------------------
+# Archive Files (TIDAK UNTUK PUBLISH)
+# ----------------------------------------------------------------------------
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+*.gz
+*.bz2
+*.xz
+
+# Kecuali release archives
+!releases/*.zip
+!releases/*.tar.gz
+
+# ----------------------------------------------------------------------------
+# Media Files (Large - TIDAK UNTUK PUBLISH)
+# ----------------------------------------------------------------------------
+# Images (kecuali yang di docs/assets)
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.bmp
+*.tiff
+*.ico
+*.svg
+!docs/assets/**/*.png
+!docs/assets/**/*.jpg
+!docs/assets/**/*.svg
+
+# Videos
+*.mp4
+*.avi
+*.mov
+*.wmv
+*.flv
+*.webm
+
+# Audio
+*.mp3
+*.wav
+*.flac
+*.aac
+
+# ----------------------------------------------------------------------------
+# Presentation Files (TIDAK UNTUK PUBLISH - Internal Only)
+# ----------------------------------------------------------------------------
+*.pptx
+*.ppt
+*.key
+*.odp
+
+# PDF presentations (kecuali final)
+*.pdf
+!docs/final/*.pdf
+
+# ----------------------------------------------------------------------------
+# Miscellaneous
+# ----------------------------------------------------------------------------
+# Lock files (kecuali package-lock.json untuk reproducibility)
+*.lock
+!package-lock.json
+
+# Secrets & Credentials (VERY SENSITIVE!)
+secrets/
+credentials/
+*.key
+*.pem
+*.cert
+*.crt
+*.p12
+*.pfx
+*.keystore
+
+# API Keys & Tokens
+*_token
+*_key
+*_secret
+api_keys.txt
+
+# Configuration dengan sensitive data
+config.local.*
+settings.local.*
+
+# ----------------------------------------------------------------------------
+# Project-Specific (TIDAK UNTUK PUBLISH)
+# ----------------------------------------------------------------------------
+# Simulator data
+simulator/data/
+simulator/aeropon.db
+
+# API data
+api/aeropon.db
+
+# Conversation exports
+exports/
+downloads/
+
+# User uploads
+uploads/
+user_data/
+
+# Generated reports
+reports/
+*.report
+
+# ----------------------------------------------------------------------------
+# Keep These Files (Examples & Templates)
+# ----------------------------------------------------------------------------
+# Uncomment jika ada:
+# !.env.example
+# !config.example.json
+# !docker-compose.example.yml
+# !README.md
+# !LICENSE
+# !CONTRIBUTING.md
+
+# ----------------------------------------------------------------------------
+# Notes
+# ----------------------------------------------------------------------------
+# File ini di-generate untuk Aeropon project
+# Tujuan: Protect sensitive data, user privacy, dan reduce repo size
+# 
+# JANGAN commit:
+# - User data (conversations, database)
+# - Credentials (WhatsApp auth, API keys)
+# - Large files (models, qdrant storage)
+# - Development files (docs, utils, scripts)
+# - Personal files (.agent, .claude)
+# - Generated files (logs, cache, temp)
+#
+# BOLEH commit:
+# - Source code (src/, api/, simulator/)
+# - Configuration templates (.env.example)
+# - Requirements (requirements.txt, package.json)
+# - Documentation (README.md)
+# - License & Contributing guidelines
+# ----------------------------------------------------------------------------
