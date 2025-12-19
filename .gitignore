@@ -181,12 +181,19 @@ $RECYCLE.BIN/
 .claude/
 .cursor/
 .aider/
+.gemini/
+
+# GitHub internal docs
+.github/
 
 # ----------------------------------------------------------------------------
 # Documentation (TIDAK UNTUK PUBLISH - Internal Only)
 # ----------------------------------------------------------------------------
+# Semua file di folder docs (termasuk PDF laporan, proposal, dll)
 docs/
-QUICK_REFERENCE.md
+
+# Paper referensi penelitian
+paper/
 
 # Kecuali README utama
 !README.md
@@ -453,9 +460,12 @@ cache/
 *.key
 *.odp
 
-# PDF presentations (kecuali final)
+# Semua PDF (laporan, proposal, presentasi)
 *.pdf
+
+# Kecuali PDF final untuk release
 !docs/final/*.pdf
+!releases/*.pdf
 
 # ----------------------------------------------------------------------------
 # Miscellaneous
