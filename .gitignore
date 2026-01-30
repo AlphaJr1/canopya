@@ -225,7 +225,7 @@ services/webhook/node_modules/
 !services/*/*.js
 !services/*/*.json
 !services/*/package.json
-!services/*/requirements.txt
+# !services/*/requirements.txt
 
 # ----------------------------------------------------------------------------
 # Utilities & Scripts (TIDAK UNTUK PUBLISH - Development Only)
