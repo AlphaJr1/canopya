@@ -195,8 +195,9 @@ $RECYCLE.BIN/
 *.docs
 *.pdf
 
-# Exception: Hanya README.md di root project yang di-commit
+# Exception: Hanya README.md dan requirements.txt di root project yang di-commit
 !/README.md
+!/requirements.txt
 
 # Folder dokumentasi tetap di-ignore
 docs/
