@@ -55,10 +55,10 @@ class OnboardingEngine:
         }
     
     def _handle_name_input(self, message: str, data: Dict) -> Dict:
-        # Extract name dari message
-        name = self._extract_name(message)
+        # Extract full name dan nickname
+        result = self._extract_name(message)
         
-        if not name:
+        if not result:
             # Invalid name, ask again
             return {
                 'response': get_message('follow_up_invalid_name'),
@@ -67,11 +67,17 @@ class OnboardingEngine:
                 'completed': False
             }
         
-        # Valid name, proceed to ask plant name
+        full_name = result['full_name']
+        nickname = result['nickname']
+        
+        # Valid name, proceed to ask plant name (greeting pakai nickname)
         return {
-            'response': get_message('ask_plant_name', name=name),
+            'response': get_message('ask_plant_name', name=nickname),
             'next_step': OnboardingState.ASK_PLANT_NAME.value,
-            'data_update': {'name': name},
+            'data_update': {
+                'name': full_name,
+                'nickname': nickname
+            },
             'completed': False
         }
     
@@ -106,7 +112,12 @@ class OnboardingEngine:
         # Detect growth stage
         growth_stage = detect_growth_stage(message)
         
-        if growth_stage == 'unknown':
+        # Juga check apakah message terlalu umum/tidak jelas
+        generic_words = ['tumbuh', 'besar', 'gitu', 'aja', 'deh', 'sih']
+        message_lower = message.lower()
+        is_too_generic = any(word in message_lower for word in generic_words) and growth_stage == 'vegetative'
+        
+        if growth_stage == 'unknown' or is_too_generic:
             # Invalid growth stage, ask again
             return {
                 'response': get_message('follow_up_invalid_stage'),
@@ -132,11 +143,11 @@ class OnboardingEngine:
         }
         plant_type_label = type_labels.get(data.get('plant_type', 'unknown'), 'Lainnya')
         
-        # Proceed to confirmation
+        # Proceed to confirmation (pakai nickname untuk display)
         return {
             'response': get_message(
                 'confirm_data',
-                name=data.get('name', ''),
+                name=data.get('nickname', data.get('name', '')),
                 plant_name=data.get('plant_name', ''),
                 plant_type=plant_type_label,
                 growth_stage=stage_label
@@ -187,12 +198,16 @@ class OnboardingEngine:
             'completed': True
         }
     
-    def _extract_name(self, message: str) -> Optional[str]:
+    def _extract_name(self, message: str) -> Optional[Dict]:
         """
-        Extract name dari user message
-        Simple extraction: ambil first 1-3 words, remove common prefixes
+        Extract full name dan nickname dari user message
+        Handle Indonesian name prefixes (Muhammad, Ahmad, Siti, dll)
+        
+        Returns:
+            Dict dengan 'full_name' dan 'nickname', atau None jika invalid
         """
-        message = re.sub(r'^(nama saya|saya|aku|my name is|i am|i\'m)\s+', '', message, flags=re.IGNORECASE)
+        # Remove common input prefixes
+        message = re.sub(r'^(nama saya adalah|nama saya|saya|aku|my name is|i am|i\'m)\s+', '', message, flags=re.IGNORECASE)
         
         # Clean message
         message = message.strip()
@@ -200,22 +215,42 @@ class OnboardingEngine:
         # Remove special characters except spaces
         message = re.sub(r'[^a-zA-Z\s]', '', message)
         
-        # Take first 1-3 words
+        # Take words
         words = message.split()
         if len(words) == 0:
             return None
         
-        # Limit to 3 words max (untuk nama panjang)
-        name = ' '.join(words[:3])
+        # Capitalize properly
+        words = [w.title() for w in words]
+        
+        # Full name (max 3 words)
+        full_name = ' '.join(words[:3])
         
         # Validate: at least 2 characters
-        if len(name) < 2:
+        if len(full_name) < 2:
             return None
         
-        # Capitalize properly
-        name = name.title()
+        # Extract nickname: skip Indonesian common prefixes
+        indonesian_prefixes = [
+            'Muhammad', 'Moh', 'Mohammad', 'Muhamad',
+            'Ahmad', 'Ahmed',
+            'Abdul',
+            'Siti',
+            'Nur',
+            'Haji', 'Hajjah',
+            'Raden'
+        ]
         
-        return name
+        # Check if first word is a prefix
+        if words[0] in indonesian_prefixes and len(words) > 1:
+            nickname = words[1]  # Use second word
+        else:
+            nickname = words[0]  # Use first word
+        
+        return {
+            'full_name': full_name,
+            'nickname': nickname
+        }
     
     def _extract_plant_name(self, message: str) -> Optional[str]:
         """

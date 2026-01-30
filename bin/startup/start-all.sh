@@ -7,7 +7,7 @@
 # 1. FastAPI Chatbot (default port 8000, auto-detect jika terpakai)
 # 2. Simulator IoT + LSTM (default port 3456, auto-detect jika terpakai)
 # 3. WhatsApp Webhook via Baileys (default port 3000, auto-detect jika terpakai)
-# 4. Dashboard Streamlit (default port 8501, auto-detect jika terpakai)
+# 4. Dashboard Streamlit (default port 8507, auto-detect jika terpakai)
 #
 # Jika port default terpakai, akan otomatis mencari port kosong
 # Semua log disimpan di folder logs/ dengan nama terpisah
@@ -24,12 +24,14 @@ CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
 # Get project root
-PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-LOG_DIR="$PROJECT_ROOT/logs"
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+RUN_DIR="$PROJECT_ROOT/.run"
+LOG_DIR="$RUN_DIR/logs/active"
+PID_DIR="$RUN_DIR/pids"
 PORT_INFO_FILE="$PROJECT_ROOT/.ports.info"
 
-# Create logs directory
-mkdir -p "$LOG_DIR"
+# Create directories
+mkdir -p "$LOG_DIR" "$PID_DIR"
 
 # Clear screen
 clear
@@ -220,15 +222,15 @@ else
     print_success "WhatsApp will use default port 3000"
 fi
 
-DASHBOARD_PORT=$(find_free_port 8501)
+DASHBOARD_PORT=$(find_free_port 8507)
 if [ "$DASHBOARD_PORT" == "0" ]; then
     print_error "Could not find free port for Dashboard"
     exit 1
 fi
-if [ "$DASHBOARD_PORT" != "8501" ]; then
-    print_info "Dashboard will use port $DASHBOARD_PORT (default 8501 was busy)"
+if [ "$DASHBOARD_PORT" != "8507" ]; then
+    print_info "Dashboard will use port $DASHBOARD_PORT (default 8507 was busy)"
 else
-    print_success "Dashboard will use default port 8501"
+    print_success "Dashboard will use default port 8507"
 fi
 
 DB_VIEWER_PORT=$(find_free_port 8502)
@@ -274,16 +276,16 @@ source "$PROJECT_ROOT/venv/bin/activate"
 # ============================================================
 
 print_step "1/4 Starting FastAPI Chatbot (Port $FASTAPI_PORT)..."
-cd "$PROJECT_ROOT/api"
+cd "$PROJECT_ROOT"
 
-nohup uvicorn main:app \
+PYTHONPATH="$PROJECT_ROOT" nohup uvicorn services.fastapi.main:app \
     --host 0.0.0.0 \
     --port $FASTAPI_PORT \
     --log-level info \
     > "$LOG_DIR/fastapi.log" 2>&1 &
 
 FASTAPI_PID=$!
-echo $FASTAPI_PID > "$PROJECT_ROOT/.fastapi.pid"
+echo $FASTAPI_PID > "$PID_DIR/fastapi.pid"
 
 if wait_for_port $FASTAPI_PORT "FastAPI"; then
     print_info "Log: $LOG_DIR/fastapi.log"
@@ -301,10 +303,10 @@ echo ""
 # ============================================================
 
 print_step "2/4 Starting IoT Simulator + LSTM (Port $SIMULATOR_PORT)..."
-cd "$PROJECT_ROOT/simulator"
+cd "$PROJECT_ROOT/services/simulator"
 
 # Update config.json with new port
-python3 << EOF
+python3 <<EOF
 import json
 with open('config.json', 'r') as f:
     config = json.load(f)
@@ -318,7 +320,7 @@ nohup "$PROJECT_ROOT/venv/bin/python" background_generator.py \
     > "$LOG_DIR/simulator_generator.log" 2>&1 &
 
 BG_GEN_PID=$!
-echo $BG_GEN_PID > "$PROJECT_ROOT/.simulator_generator.pid"
+echo $BG_GEN_PID > "$PID_DIR/simulator_generator.pid"
 print_info "Background generator started (PID: $BG_GEN_PID)"
 
 sleep 2
@@ -328,7 +330,7 @@ nohup "$PROJECT_ROOT/venv/bin/python" server.py \
     > "$LOG_DIR/simulator_api.log" 2>&1 &
 
 SIMULATOR_PID=$!
-echo $SIMULATOR_PID > "$PROJECT_ROOT/.simulator_api.pid"
+echo $SIMULATOR_PID > "$PID_DIR/simulator_api.pid"
 
 if wait_for_port $SIMULATOR_PORT "Simulator API"; then
     print_info "Log (Generator): $LOG_DIR/simulator_generator.log"
@@ -348,7 +350,7 @@ echo ""
 # ============================================================
 
 print_step "3/6 Starting WhatsApp Webhook (Port $WHATSAPP_PORT)..."
-cd "$PROJECT_ROOT/whatsapp-webhook"
+cd "$PROJECT_ROOT/services/webhook"
 
 # Check if node_modules exists
 if [ ! -d "node_modules" ]; then
@@ -367,7 +369,7 @@ export FASTAPI_URL="http://localhost:$FASTAPI_PORT"
 node index.js > "$LOG_DIR/whatsapp.log" 2>&1 &
 
 WHATSAPP_PID=$!
-echo $WHATSAPP_PID > "$PROJECT_ROOT/.whatsapp.pid"
+echo $WHATSAPP_PID > "$PID_DIR/whatsapp.pid"
 print_info "WhatsApp webhook started (PID: $WHATSAPP_PID)"
 print_info "Log: $LOG_DIR/whatsapp.log"
 
@@ -473,7 +475,7 @@ echo ""
 print_step "4/6 Starting RAG Dashboard (Port $DASHBOARD_PORT)..."
 cd "$PROJECT_ROOT"
 
-nohup streamlit run rag_dashboard.py \
+PYTHONPATH="$PROJECT_ROOT" nohup streamlit run services/dashboardrag/rag_dashboard.py \
     --server.port $DASHBOARD_PORT \
     --server.address 0.0.0.0 \
     --server.headless true \
@@ -481,7 +483,7 @@ nohup streamlit run rag_dashboard.py \
     > "$LOG_DIR/dashboard.log" 2>&1 &
 
 DASHBOARD_PID=$!
-echo $DASHBOARD_PID > "$PROJECT_ROOT/.dashboard.pid"
+echo $DASHBOARD_PID > "$PID_DIR/dashboard.pid"
 
 if wait_for_port $DASHBOARD_PORT "RAG Dashboard"; then
     print_info "Log: $LOG_DIR/dashboard.log"
@@ -495,27 +497,27 @@ fi
 echo ""
 
 # ============================================================
-# 4.5. START NGROK TUNNEL
+# 4.5. START CLOUDFLARE TUNNEL
 # ============================================================
 
-print_step "4.5/6 Starting Ngrok Tunnel for RAG Dashboard..."
+print_step "4.5/6 Starting Cloudflare Tunnel for canopya.cloud..."
 
-# Start ngrok
-bash "$PROJECT_ROOT/bin/start-ngrok.sh" > "$LOG_DIR/ngrok.log" 2>&1 &
-sleep 4
+# Start Cloudflare Tunnel
+bash "$PROJECT_ROOT/bin/startup/start-cloudflare.sh" > "$LOG_DIR/cloudflare.log" 2>&1 &
+sleep 5
 
-# Get ngrok URL
-if [ -f "$PROJECT_ROOT/.ngrok_url" ]; then
-    NGROK_URL=$(cat "$PROJECT_ROOT/.ngrok_url")
-    print_success "Ngrok tunnel started: $NGROK_URL"
-    print_info "Log: $LOG_DIR/ngrok.log"
+# Get Cloudflare URL
+if [ -f "$PROJECT_ROOT/.cloudflare_url" ]; then
+    CF_URL=$(cat "$PROJECT_ROOT/.cloudflare_url")
+    print_success "Cloudflare Tunnel started: $CF_URL"
+    print_info "Log: $LOG_DIR/cloudflare.log"
     
     # Set environment variable for chatbot
-    export RAG_DASHBOARD_URL="$NGROK_URL"
-    echo "RAG_DASHBOARD_URL=$NGROK_URL" >> "$PORT_INFO_FILE"
+    export RAG_DASHBOARD_URL="$CF_URL"
+    echo "RAG_DASHBOARD_URL=$CF_URL" >> "$PORT_INFO_FILE"
 else
-    print_warning "Ngrok URL not found. Dashboard will use localhost."
-    print_info "You can start ngrok manually: ./bin/start-ngrok.sh"
+    print_warning "Cloudflare URL not found. Dashboard will use localhost."
+    print_info "You can start tunnel manually: ./bin/startup/start-cloudflare.sh"
 fi
 
 echo ""
@@ -535,7 +537,7 @@ nohup streamlit run database_viewer.py \
     > "$LOG_DIR/database_viewer.log" 2>&1 &
 
 DB_VIEWER_PID=$!
-echo $DB_VIEWER_PID > "$PROJECT_ROOT/.database_viewer.pid"
+echo $DB_VIEWER_PID > "$PID_DIR/database_viewer.pid"
 
 if wait_for_port $DB_VIEWER_PORT "Database Viewer"; then
     print_info "Log: $LOG_DIR/database_viewer.log"
@@ -566,9 +568,10 @@ echo "  • Simulator API:       http://localhost:$SIMULATOR_PORT"
 echo "  • Simulator Docs:      http://localhost:$SIMULATOR_PORT/docs"
 echo "  • WhatsApp HTTP:       http://localhost:$WHATSAPP_PORT/health"
 echo "  • RAG Dashboard:       http://localhost:$DASHBOARD_PORT"
-if [ -f "$PROJECT_ROOT/.ngrok_url" ]; then
-    NGROK_URL=$(cat "$PROJECT_ROOT/.ngrok_url")
-    echo "  • RAG Dashboard (Public): $NGROK_URL"
+if [ -f "$PROJECT_ROOT/.cloudflare_url" ]; then
+    CF_URL=$(cat "$PROJECT_ROOT/.cloudflare_url")
+    echo "  • RAG Dashboard (Public): $CF_URL"
+    echo "  • Domain: https://canopya.cloud"
 fi
 echo "  • Database Viewer:     http://localhost:$DB_VIEWER_PORT"
 echo ""
@@ -579,7 +582,7 @@ echo "  • Simulator (Gen):     $LOG_DIR/simulator_generator.log"
 echo "  • Simulator (API):     $LOG_DIR/simulator_api.log"
 echo "  • WhatsApp:            $LOG_DIR/whatsapp.log"
 echo "  • RAG Dashboard:       $LOG_DIR/dashboard.log"
-echo "  • Ngrok:               $LOG_DIR/ngrok.log"
+echo "  • Cloudflare Tunnel:   $LOG_DIR/cloudflare.log"
 echo "  • Database Viewer:     $LOG_DIR/database_viewer.log"
 echo ""
 
@@ -596,7 +599,7 @@ echo -e "${CYAN}🔌 Port Allocation:${NC}"
 echo "  • FastAPI:             $FASTAPI_PORT $([ "$FASTAPI_PORT" != "8000" ] && echo "(default: 8000)" || echo "")"
 echo "  • Simulator:           $SIMULATOR_PORT $([ "$SIMULATOR_PORT" != "3456" ] && echo "(default: 3456)" || echo "")"
 echo "  • WhatsApp:            $WHATSAPP_PORT $([ "$WHATSAPP_PORT" != "3000" ] && echo "(default: 3000)" || echo "")"
-echo "  • Dashboard:           $DASHBOARD_PORT $([ "$DASHBOARD_PORT" != "8501" ] && echo "(default: 8501)" || echo "")"
+echo "  • Dashboard:           $DASHBOARD_PORT $([ "$DASHBOARD_PORT" != "8507" ] && echo "(default: 8507)" || echo "")"
 echo "  • Database Viewer:     $DB_VIEWER_PORT $([ "$DB_VIEWER_PORT" != "8502" ] && echo "(default: 8502)" || echo "")"
 echo ""
 

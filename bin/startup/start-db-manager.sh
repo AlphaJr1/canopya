@@ -47,5 +47,4 @@ echo "DB_MANAGER_PORT=$PORT" >> "$LOG_FILE"
 echo "" >> "$LOG_FILE"
 
 # Run streamlit and redirect output to log file
-streamlit run db_manager.py --server.port=$PORT --server.headless=true >> "$LOG_FILE" 2>&1
-
+streamlit run services/dbmanager/db_manager.py --server.port=$PORT --server.headless=true >> "$LOG_FILE" 2>&1

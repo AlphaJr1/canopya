@@ -14,9 +14,14 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Get project root
-PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+RUN_DIR="$PROJECT_ROOT/.run"
+NGROK_LOG_FILE="$RUN_DIR/logs/active/ngrok.log"
+NGROK_PID_FILE="$RUN_DIR/pids/ngrok.pid"
 NGROK_URL_FILE="$PROJECT_ROOT/.ngrok_url"
-NGROK_PID_FILE="$PROJECT_ROOT/.ngrok.pid"
+
+# Create directories
+mkdir -p "$RUN_DIR/logs/active" "$RUN_DIR/pids"
 
 # Check if ngrok is installed
 if ! command -v ngrok &> /dev/null; then
@@ -28,18 +33,18 @@ if ! command -v ngrok &> /dev/null; then
     exit 1
 fi
 
-# Get dashboard port from .ports.info
+# Get FastAPI port from .ports.info
 if [ -f "$PROJECT_ROOT/.ports.info" ]; then
     source "$PROJECT_ROOT/.ports.info"
-    DASHBOARD_PORT=${DASHBOARD_PORT:-8501}
+    FASTAPI_PORT=${FASTAPI_PORT:-8000}
 else
-    DASHBOARD_PORT=8501
+    FASTAPI_PORT=8000
 fi
 
-echo -e "${BLUE}Starting ngrok tunnel for RAG Dashboard (port $DASHBOARD_PORT)...${NC}"
+echo -e "${BLUE}Starting ngrok tunnel for FastAPI (port $FASTAPI_PORT)...${NC}"
 
-# Start ngrok in background
-nohup ngrok http $DASHBOARD_PORT > /dev/null 2>&1 &
+# Start ngrok in background with logging
+nohup ngrok http $FASTAPI_PORT --log=stdout --log-level=info > "$NGROK_LOG_FILE" 2>&1 &
 NGROK_PID=$!
 echo $NGROK_PID > "$NGROK_PID_FILE"
 

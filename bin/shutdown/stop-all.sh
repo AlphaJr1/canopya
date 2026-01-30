@@ -17,7 +17,10 @@ CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
 # Get project root
-PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+RUN_DIR="$PROJECT_ROOT/.run"
+PID_DIR="$RUN_DIR/pids"
+LOG_DIR="$RUN_DIR/logs/active"
 
 # ============================================================
 # HELPER FUNCTIONS
@@ -95,15 +98,15 @@ print_step "Stopping all Aeropon services..."
 echo ""
 
 # Stop services in reverse order
-stop_service "Database Viewer" "$PROJECT_ROOT/.database_viewer.pid"
+stop_service "Database Viewer" "$PID_DIR/database_viewer.pid"
 echo ""
 
-stop_service "Dashboard" "$PROJECT_ROOT/.dashboard.pid"
+stop_service "Dashboard" "$PID_DIR/dashboard.pid"
 echo ""
 
 # Stop ngrok
-if [ -f "$PROJECT_ROOT/.ngrok.pid" ]; then
-    stop_service "Ngrok" "$PROJECT_ROOT/.ngrok.pid"
+if [ -f "$PID_DIR/ngrok.pid" ]; then
+    stop_service "Ngrok" "$PID_DIR/ngrok.pid"
     rm -f "$PROJECT_ROOT/.ngrok_url"
 else
     # Try to kill ngrok by name
@@ -115,16 +118,16 @@ else
 fi
 echo ""
 
-stop_service "WhatsApp Webhook" "$PROJECT_ROOT/.whatsapp.pid"
+stop_service "WhatsApp Webhook" "$PID_DIR/whatsapp.pid"
 echo ""
 
-stop_service "Simulator API" "$PROJECT_ROOT/.simulator_api.pid"
+stop_service "Simulator API" "$PID_DIR/simulator_api.pid"
 echo ""
 
-stop_service "Simulator Generator" "$PROJECT_ROOT/.simulator_generator.pid"
+stop_service "Simulator Generator" "$PID_DIR/simulator_generator.pid"
 echo ""
 
-stop_service "FastAPI Chatbot" "$PROJECT_ROOT/.fastapi.pid"
+stop_service "FastAPI Chatbot" "$PID_DIR/fastapi.pid"
 echo ""
 
 # Check for any remaining processes on our ports
@@ -154,6 +157,6 @@ echo "============================================================"
 echo -e "${NC}"
 echo ""
 
-print_info "Logs are preserved in logs/ directory"
+print_info "Logs are preserved in $LOG_DIR directory"
 print_info "To start again: ./start-all.sh"
 echo ""

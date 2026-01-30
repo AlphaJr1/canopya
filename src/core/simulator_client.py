@@ -153,9 +153,7 @@ class SimulatorClient:
 _simulator_client = None
 
 def get_simulator_client() -> SimulatorClient:
-    """
     global _simulator_client
-    """
     if _simulator_client is None:
         _simulator_client = SimulatorClient()
     return _simulator_client

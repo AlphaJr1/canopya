@@ -34,7 +34,6 @@ class SensorReading:
 
 @dataclass
 class Diagnostic:
-    """
     severity: Severity
     parameter: str
     value: float
@@ -43,9 +42,12 @@ class Diagnostic:
     optimal_range: str
 
 class RuleBasedEngine:
+    """
+    A rule-based engine for diagnosing issues in NFT hydroponic systems
+    based on sensor readings and predefined thresholds.
+    """
     
     # Validated thresholds from research (see research_sources.md)
-    """
     THRESHOLDS = {
         'ph': {
             'optimal': (5.5, 6.5),

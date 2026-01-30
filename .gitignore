@@ -187,33 +187,69 @@ $RECYCLE.BIN/
 .github/
 
 # ----------------------------------------------------------------------------
-# Documentation (TIDAK UNTUK PUBLISH - Internal Only)
+# Dokumentasi & Arsip (TIDAK UNTUK PUBLISH)
 # ----------------------------------------------------------------------------
-# Semua file di folder docs (termasuk PDF laporan, proposal, dll)
+# Ignore semua format dokumen
+*.md
+*.txt
+*.docs
+*.pdf
+
+# Exception: Hanya README.md di root project yang di-commit
+!/README.md
+
+# Folder dokumentasi tetap di-ignore
 docs/
-
-# Paper referensi penelitian
 paper/
-
-# Kecuali README utama
-!README.md
+/site
 
 # ----------------------------------------------------------------------------
-# Utilities (TIDAK UNTUK PUBLISH - Development Only)
+# Services - Runtime Data (TIDAK UNTUK PUBLISH)
 # ----------------------------------------------------------------------------
+# Service logs dan runtime data
+services/*/logs/
+services/*/data/
+services/*/*.db
+services/*/*.pid
+
+# WhatsApp webhook sensitive data
+services/webhook/auth_info/
+services/webhook/creds.json
+services/webhook/conversations/
+services/webhook/backups/
+services/webhook/node_modules/
+
+# Kecuali source code dan config
+# !services/*/README.md
+!services/*/*.py
+!services/*/*.js
+!services/*/*.json
+!services/*/package.json
+!services/*/requirements.txt
+
+# ----------------------------------------------------------------------------
+# Utilities & Scripts (TIDAK UNTUK PUBLISH - Development Only)
+# ----------------------------------------------------------------------------
+# Utilities untuk development
 utils/
-scripts/
 
-# Kecuali scripts yang essential untuk production
+# Scripts - hanya yang essential untuk production
+scripts/
 !scripts/migration/
 !scripts/admin/set_admin.py
+
+# Backup folders dari reorganisasi
+.backup_*/
+*_old/
+
 
 # ----------------------------------------------------------------------------
 # Machine Learning Models (Large Files - TIDAK UNTUK PUBLISH)
 # ----------------------------------------------------------------------------
 models/
 !models/.gitkeep
-!models/README.md
+# !models/README.md
+# !data/README.md
 
 # Jika ada model kecil yang perlu di-commit, uncomment:
 # !models/small_model.pkl
@@ -251,8 +287,12 @@ qdrant_storage/
 !qdrant_storage/.gitkeep
 
 # ----------------------------------------------------------------------------
-# Logs (TIDAK UNTUK PUBLISH)
+# Runtime Files (TIDAK UNTUK PUBLISH)
 # ----------------------------------------------------------------------------
+# Runtime folder containing logs, PIDs, and temporary files
+.run/
+
+# Legacy log folders (sudah dipindah ke .run/)
 logs/
 *.log
 *.log.*
@@ -263,7 +303,7 @@ logs/
 .ngrok_url
 .ports.info
 
-# Log files di subdirectories
+# Log files di subdirectories (legacy)
 api/logs/
 simulator/logs/
 whatsapp-webhook/logs/
@@ -306,7 +346,7 @@ whatsapp-webhook/logs/
 
 # Kecuali example files
 !whatsapp-webhook/.env.example
-!whatsapp-webhook/README.md
+# !whatsapp-webhook/README.md
 
 # ----------------------------------------------------------------------------
 # Environment Variables (SENSITIVE - TIDAK UNTUK PUBLISH)
@@ -352,7 +392,7 @@ temp/
 # ----------------------------------------------------------------------------
 tests/
 !tests/__init__.py
-!tests/README.md
+# !tests/README.md
 
 # Test coverage
 .coverage
@@ -369,10 +409,16 @@ benchmark_results/
 *.benchmark
 
 # ----------------------------------------------------------------------------
-# Ngrok (TIDAK UNTUK PUBLISH)
+# Tunneling (TIDAK UNTUK PUBLISH)
 # ----------------------------------------------------------------------------
+# Ngrok (legacy)
 .ngrok*
 ngrok.yml
+
+# Cloudflare Tunnel
+.cloudflare_url
+.cloudflared/
+cert.pem
 
 # ----------------------------------------------------------------------------
 # Process ID Files (Runtime - TIDAK UNTUK PUBLISH)
@@ -404,6 +450,10 @@ cache/
 *_backup
 *_old
 *.orig
+
+# Cleanup scripts (one-time use)
+cleanup_shell_scripts.sh
+SHELL_REORGANIZATION_SUMMARY.txt
 
 # ----------------------------------------------------------------------------
 # Archive Files (TIDAK UNTUK PUBLISH)
@@ -460,12 +510,9 @@ cache/
 *.key
 *.odp
 
-# Semua PDF (laporan, proposal, presentasi)
-*.pdf
-
-# Kecuali PDF final untuk release
-!docs/final/*.pdf
-!releases/*.pdf
+# PDF sudah di-ignore secara global di atas
+# !docs/final/*.pdf
+# !releases/*.pdf
 
 # ----------------------------------------------------------------------------
 # Miscellaneous

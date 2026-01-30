@@ -1111,7 +1111,7 @@ THRESHOLDS = {
 Edit `src/core/rag_engine.py`:
 
 ```python
-ollama_model: str = "qwen3:8b"  # Ganti dengan model lain
+ollama_model: str = "ministral-3:3b"  # Ganti dengan model lain
 ```
 
 ### Mengubah Embedding Model

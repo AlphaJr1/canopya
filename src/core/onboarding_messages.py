@@ -1,8 +1,5 @@
-"""
-Onboarding Messages Templates
-Natural, friendly, dan step-by-step messages untuk user onboarding
-
 MESSAGES = {
+    'welcome': """Halo! 👋 Selamat datang di Canopya!
 
 Saya akan membantu Anda merawat tanaman hidroponik dengan:
 • 📊 Monitoring pH, TDS, dan suhu
@@ -12,26 +9,29 @@ Saya akan membantu Anda merawat tanaman hidroponik dengan:
 
 Sebelum mulai, saya perlu kenalan dulu dengan Anda. Siap? 😊
 
-    
+Siapa nama Anda?""",
 
-Sekarang, tanaman apa yang sedang Anda tanam?
+    'ask_plant_name': """Senang berkenalan dengan Anda, {name}! 🌱
 
-    
+Sekarang, tanaman apa yang sedang Anda tanam?""",
 
+    'ask_growth_stage': """Baik, {plant_name} ya! 🌿
+
+Sekarang di tahap pertumbuhan apa?
 1️⃣ Seedling (Bibit/Baru ditanam)
 2️⃣ Vegetatif (Tumbuh daun)
-3️⃣ Berbuah/Berbunga
+3️⃣ Berbuah/Berbunga""",
 
-    
+    'confirm_data': """Oke, saya sudah catat data Anda:
 
 👤 Nama: {name}
 🌱 Tanaman: {plant_name} ({plant_type})
 📊 Tahap: {growth_stage}
 
 Apakah data ini sudah benar?
-    
+Ketik *Ya* untuk lanjut, atau *Tidak* untuk input ulang.""",
 
-Sekarang saya akan tunjukkan apa saja yang bisa saya bantu:
+    'tutorial': """Sekarang saya akan tunjukkan apa saja yang bisa saya bantu:
 
 🔍 Monitoring Sensor
 Tanyakan kondisi tanaman Anda:
@@ -55,30 +55,61 @@ Saya akan kirim notifikasi jika ada masalah dengan tanaman Anda.
 
 ---
 
-Yuk coba sekarang! Tanyakan apa saja tentang tanaman Anda 😊
+Yuk coba sekarang! Tanyakan apa saja tentang tanaman Anda 😊""",
 
-    
+    'follow_up_invalid_name': """Bisa tolong ketik nama Anda sekali lagi?""",
 
-Bisa tolong ketik nama Anda sekali lagi?
-    
+    'follow_up_invalid_plant': """Bisa tolong ketik ulang nama tanamannya? Contoh: kangkung, tomat, selada""",
 
-Bisa tolong ketik ulang nama tanamannya? 
-    
-
-Pilih salah satu ya:
+    'follow_up_invalid_stage': """Pilih salah satu ya:
 1️⃣ Seedling (baru ditanam)
 2️⃣ Vegetatif (tumbuh daun)
-3️⃣ Berbuah/Berbunga
+3️⃣ Berbuah/Berbunga""",
 
-    
+    'restart_onboarding': """Oke, kita mulai dari awal ya! 🔄
 
-    
+Siapa nama Anda?""",
 
-Sekarang Anda bisa langsung bertanya atau minta bantuan.
+    'onboarding_completed': """Sekarang Anda bisa langsung bertanya atau minta bantuan.
 
+💡 Tips: Ketik *profil* kapan saja untuk lihat/edit data Anda!
+
+Selamat menanam! 🌱""",
+
+    'profile_view': """📋 Profil Anda:
+
+👤 Nama: {full_name}
+   Dipanggil: {nickname}
+🌱 Tanaman: {plant_name} ({plant_type})
+📊 Tahap: {growth_stage}
+
+Mau edit data? Ketik:
+1️⃣ *edit nama*
+2️⃣ *edit tanaman*
+3️⃣ *edit tahap*
+4️⃣ *reset profil* (onboarding ulang)""",
+
+    'edit_name_prompt': """Oke, siapa nama baru Anda?""",
+
+    'edit_plant_prompt': """Oke, tanaman apa yang sekarang Anda tanam?""",
+
+    'edit_stage_prompt': """Oke, sekarang di tahap apa?
+1️⃣ Seedling (Bibit)
+2️⃣ Vegetatif (Tumbuh daun)
+3️⃣ Berbuah/Berbunga""",
+
+    'edit_confirm': """Konfirmasi perubahan:
+{field}: {old_value} → {new_value}
+
+Lanjutkan? Ketik *Ya* atau *Tidak*""",
+
+    'edit_success': """✅ Profil berhasil diupdate!
+
+Ketik *profil* untuk lihat data terbaru.""",
+
+    'edit_cancelled': """Perubahan dibatalkan. Data tetap seperti semula."""
 }
 
-"""
 
 def get_message(key: str, **kwargs) -> str:
     """
