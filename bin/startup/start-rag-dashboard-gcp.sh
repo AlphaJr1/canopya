@@ -10,7 +10,7 @@ mkdir -p $LOG_DIR
 LOG_FILE="$LOG_DIR/rag-dashboard.log"
 
 echo "🚀 Starting RAG Dashboard..."
-nohup python3 -m streamlit run services/dashboardrag/app.py \
+nohup python3 -m streamlit run services/dashboardrag/rag_dashboard.py \
   --server.port 3000 \
   --server.address 0.0.0.0 \
   > $LOG_FILE 2>&1 &
