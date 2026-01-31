@@ -4,6 +4,7 @@ Simple local playground to send messages to FastAPI /chat endpoint
 """
 
 import os
+import random
 from typing import Any, Dict, List
 
 import requests
@@ -17,6 +18,40 @@ FASTAPI_BASE_URL = os.getenv("FASTAPI_URL", "http://localhost:8000")
 CHAT_ENDPOINT = f"{FASTAPI_BASE_URL}/chat"
 HEALTH_ENDPOINT = f"{FASTAPI_BASE_URL}/health"
 
+# Pool pertanyaan contoh untuk shortcut
+SAMPLE_QUESTIONS = [
+    "Apa itu sistem aeroponik?",
+    "Bagaimana cara kerja aeroponik?",
+    "Apa keuntungan menggunakan aeroponik?",
+    "Berapa pH ideal untuk tanaman aeroponik?",
+    "Bagaimana cara mengatur pH air?",
+    "Apa fungsi sensor pH?",
+    "Bagaimana cara kalibrasi sensor?",
+    "Apa itu nutrisi hidroponik?",
+    "Berapa EC yang ideal untuk tanaman?",
+    "Bagaimana cara mengatasi pH terlalu tinggi?",
+    "Bagaimana cara mengatasi pH terlalu rendah?",
+    "Apa perbedaan aeroponik dan hidroponik?",
+    "Tanaman apa yang cocok untuk aeroponik?",
+    "Berapa suhu ideal untuk aeroponik?",
+    "Bagaimana cara merawat sistem aeroponik?",
+    "Apa itu PPM dalam aeroponik?",
+    "Bagaimana cara mengukur nutrisi?",
+    "Apa yang harus dilakukan jika tanaman layu?",
+    "Berapa lama waktu penyemprotan ideal?",
+    "Apa itu interval penyemprotan?",
+    "Bagaimana cara membersihkan sistem?",
+    "Apa fungsi pompa dalam aeroponik?",
+    "Bagaimana cara memilih nozzle yang tepat?",
+    "Apa itu root zone?",
+    "Bagaimana cara mencegah algae?",
+    "Apa penyebab akar busuk?",
+    "Bagaimana cara mengatasi clogging nozzle?",
+    "Berapa kelembaban ideal untuk aeroponik?",
+    "Apa itu DWC dan perbedaannya dengan aeroponik?",
+    "Bagaimana cara monitoring sistem otomatis?",
+]
+
 
 # -----------------------------------------------------------------------------
 # Helpers
@@ -24,8 +59,22 @@ HEALTH_ENDPOINT = f"{FASTAPI_BASE_URL}/health"
 def init_session_state() -> None:
     """Ensure required keys exist in session_state."""
     if "messages" not in st.session_state:
-        # Each message: {"role": "user"|"assistant", "content": str, "meta": dict | None}
         st.session_state.messages: List[Dict[str, Any]] = []
+    
+    if "pending_question" not in st.session_state:
+        st.session_state.pending_question = None
+
+
+def refresh_random_questions() -> None:
+    """Refresh 4 random questions."""
+    st.session_state.random_questions = random.sample(SAMPLE_QUESTIONS, min(4, len(SAMPLE_QUESTIONS)))
+
+
+def get_random_questions() -> List[str]:
+    """Get 4 random questions, initialize if needed."""
+    if "random_questions" not in st.session_state:
+        refresh_random_questions()
+    return st.session_state.random_questions
 
 
 def call_chat_api(
@@ -121,50 +170,75 @@ st.set_page_config(
 
 init_session_state()
 
-# Sidebar controls
-st.sidebar.title("Pengaturan")
-user_id = st.sidebar.text_input("User ID", value="local-tester")
-language = st.sidebar.selectbox("Bahasa", options=["id", "en"], index=0)
-include_images = st.sidebar.checkbox("Include images (dari RAG)", value=False)
-
-if st.sidebar.button("Cek Health FastAPI"):
-    health = call_health_api()
-    if "error" in health:
-        st.sidebar.error(f"Gagal memanggil /health: {health['error']}")
-    else:
-        st.sidebar.success("FastAPI sehat")
-        st.sidebar.json(health)
-
-if st.sidebar.button("Clear chat"):
-    st.session_state.messages = []
-
-st.title("Aeropon Chatbot - Streamlit Tester")
+st.title("Canopya Chatbot Tester")
 st.write(
-    "Halaman ini membantu kamu menguji chatbot Aeropon secara lokal melalui "
-    "`POST /chat` di FastAPI."
+    "Halaman ini digunakan untuk menguji kemampuan chatbot Canopya dalam menjawab "
+    "pertanyaan seputar sistem aeroponik. Anda dapat mengirim pesan dan melihat "
+    "respons chatbot secara real-time untuk memastikan kualitas jawaban."
 )
+
+# Custom CSS untuk tombol merah
+st.markdown("""
+<style>
+button[data-testid="baseButton-secondary"][key="clear_chat"] {
+    background-color: #ff6b6b !important;
+    color: white !important;
+    border: 1px solid #ff5252 !important;
+}
+button[data-testid="baseButton-secondary"][key="clear_chat"]:hover {
+    background-color: #ff5252 !important;
+    color: white !important;
+    border: 1px solid #ff3838 !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+# Tombol clear di bawah subtitle
+if st.button("🗑️ Hapus Semua Percakapan", key="clear_chat", type="secondary"):
+    st.session_state.messages = []
+    st.rerun()
+
+st.markdown("---")
 
 # Render existing conversation
 for msg in st.session_state.messages:
     render_message(msg["role"], msg["content"], msg.get("meta"))
 
+# Shortcut pertanyaan (di atas input field)
+st.markdown("### 💡 Coba pertanyaan ini:")
+random_questions = get_random_questions()
+
+cols = st.columns(4)
+for idx, question in enumerate(random_questions):
+    with cols[idx]:
+        if st.button(question, key=f"q_{idx}", use_container_width=True):
+            st.session_state.pending_question = question
+            refresh_random_questions()
+
 # Chat input
 prompt = st.chat_input("Ketik pesan untuk chatbot...")
+
+# Cek jika ada pending question dari shortcut button
+if st.session_state.pending_question:
+    prompt = st.session_state.pending_question
+    st.session_state.pending_question = None
+
+# Process message (dari shortcut atau chat input)
 if prompt:
     # Append user message
     st.session_state.messages.append(
         {"role": "user", "content": prompt, "meta": None}
     )
     render_message("user", prompt)
-
-    # Call backend
+    
+    # Call backend dengan default values
     try:
         with st.spinner("Menghubungi FastAPI /chat..."):
             result = call_chat_api(
                 message=prompt,
-                user_id=user_id,
-                language=language,
-                include_images=include_images,
+                user_id="local-tester",
+                language="id",
+                include_images=False,
             )
 
         answer = result.get("answer", "")
@@ -184,6 +258,8 @@ if prompt:
             {"role": "assistant", "content": answer, "meta": meta}
         )
         render_message("assistant", answer, meta)
+        refresh_random_questions()
+        st.rerun()
 
     except requests.RequestException as exc:
         error_msg = (
@@ -194,4 +270,3 @@ if prompt:
             {"role": "assistant", "content": error_msg, "meta": None}
         )
         render_message("assistant", error_msg)
-
