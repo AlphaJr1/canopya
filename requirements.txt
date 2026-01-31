@@ -1,51 +1,48 @@
-# Hydroponic Knowledge Base Requirements
+# Canopya - AI-Powered Smart Hydroponics Assistant
+# Python Dependencies
 
-# Web scraping
-requests==2.31.0
-beautifulsoup4==4.12.2
-lxml==4.9.3
-selenium==4.15.2
-
-# PDF processing
-PyPDF2==3.0.1
-
-# Text processing
-langdetect==1.0.9
-
-# Vector database
-qdrant-client>=1.7.1
-
-# Embeddings
-sentence-transformers>=2.3.0
-
-# LLM
-ollama>=0.1.0
-
-# API Framework
+# ============================================================================
+# Core API Framework
+# ============================================================================
 fastapi>=0.104.0
 uvicorn[standard]>=0.24.0
+pydantic>=2.5.0
+python-dotenv>=1.0.0
 
-# Database
-sqlalchemy==2.0.23
-psycopg2-binary==2.9.9
-alembic==1.13.1
+# ============================================================================
+# AI/ML - Embeddings & LLM
+# ============================================================================
+# Sentence transformers untuk E5 embeddings
+sentence-transformers>=2.3.0
 
+# Ollama client untuk LLM inference
+ollama>=0.1.0
+
+# ============================================================================
+# Vector Database
+# ============================================================================
+qdrant-client>=1.7.1
+
+# ============================================================================
+# Database & ORM
+# ============================================================================
+sqlalchemy>=2.0.23
+alembic>=1.13.1
+
+# ============================================================================
+# Dashboard & Visualization
+# ============================================================================
+streamlit>=1.29.0
+pandas>=2.1.4
+
+# ============================================================================
 # Utilities
-python-dotenv==1.0.0
-pydantic==2.5.0
+# ============================================================================
+# HTTP requests untuk external API calls
+requests>=2.31.0
 
-# Dashboard
-streamlit==1.29.0
-pandas==2.1.4
-
-# Optional: Advanced text splitting
-langchain==0.1.0
-langchain-community==0.0.10
-
-# GEPA/DSPy Optimization
-dspy-ai>=2.4.0
-rank-bm25>=0.2.2
-
-# Development
-pytest==7.4.3
-black==23.12.1
+# ============================================================================
+# Development & Testing (Optional)
+# ============================================================================
+pytest>=7.4.3
+black>=23.12.1
