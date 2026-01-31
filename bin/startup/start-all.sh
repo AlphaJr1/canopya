@@ -494,10 +494,45 @@ else
     exit 1
 fi
 
+
 echo ""
 
 # ============================================================
-# 4.5. START CLOUDFLARE TUNNEL
+# 4.5. START CHAT TESTER
+# ============================================================
+
+print_step "4.5/7 Starting Chat Tester (Port 3001)..."
+cd "$PROJECT_ROOT"
+
+CHAT_TESTER_PORT=$(find_free_port 3001)
+if [ "$CHAT_TESTER_PORT" == "0" ]; then
+    print_error "Could not find free port for Chat Tester"
+    exit 1
+fi
+
+PYTHONPATH="$PROJECT_ROOT" nohup streamlit run services/dashboardrag/chat_tester.py \
+    --server.port $CHAT_TESTER_PORT \
+    --server.address 0.0.0.0 \
+    --server.headless true \
+    --browser.gatherUsageStats false \
+    > "$LOG_DIR/chat_tester.log" 2>&1 &
+
+CHAT_TESTER_PID=$!
+echo $CHAT_TESTER_PID > "$PID_DIR/chat_tester.pid"
+
+if wait_for_port $CHAT_TESTER_PORT "Chat Tester"; then
+    print_info "Log: $LOG_DIR/chat_tester.log"
+    print_info "PID: $CHAT_TESTER_PID"
+    echo "CHAT_TESTER_PORT=$CHAT_TESTER_PORT" >> "$LOG_DIR/chat_tester.log"
+else
+    print_error "Chat Tester failed to start. Check logs: $LOG_DIR/chat_tester.log"
+    exit 1
+fi
+
+echo ""
+
+# ============================================================
+# 5. START CLOUDFLARE TUNNEL
 # ============================================================
 
 print_step "4.5/6 Starting Cloudflare Tunnel for canopya.cloud..."
@@ -568,6 +603,7 @@ echo "  • Simulator API:       http://localhost:$SIMULATOR_PORT"
 echo "  • Simulator Docs:      http://localhost:$SIMULATOR_PORT/docs"
 echo "  • WhatsApp HTTP:       http://localhost:$WHATSAPP_PORT/health"
 echo "  • RAG Dashboard:       http://localhost:$DASHBOARD_PORT"
+echo "  • Chat Tester:         http://localhost:$CHAT_TESTER_PORT"
 if [ -f "$PROJECT_ROOT/.cloudflare_url" ]; then
     CF_URL=$(cat "$PROJECT_ROOT/.cloudflare_url")
     echo "  • RAG Dashboard (Public): $CF_URL"
@@ -582,6 +618,7 @@ echo "  • Simulator (Gen):     $LOG_DIR/simulator_generator.log"
 echo "  • Simulator (API):     $LOG_DIR/simulator_api.log"
 echo "  • WhatsApp:            $LOG_DIR/whatsapp.log"
 echo "  • RAG Dashboard:       $LOG_DIR/dashboard.log"
+echo "  • Chat Tester:         $LOG_DIR/chat_tester.log"
 echo "  • Cloudflare Tunnel:   $LOG_DIR/cloudflare.log"
 echo "  • Database Viewer:     $LOG_DIR/database_viewer.log"
 echo ""
@@ -592,6 +629,7 @@ echo "  • Simulator (Gen):     $BG_GEN_PID"
 echo "  • Simulator (API):     $SIMULATOR_PID"
 echo "  • WhatsApp:            $WHATSAPP_PID"
 echo "  • Dashboard:           $DASHBOARD_PID"
+echo "  • Chat Tester:         $CHAT_TESTER_PID"
 echo "  • Database Viewer:     $DB_VIEWER_PID"
 echo ""
 
@@ -600,6 +638,7 @@ echo "  • FastAPI:             $FASTAPI_PORT $([ "$FASTAPI_PORT" != "8000" ] &
 echo "  • Simulator:           $SIMULATOR_PORT $([ "$SIMULATOR_PORT" != "3456" ] && echo "(default: 3456)" || echo "")"
 echo "  • WhatsApp:            $WHATSAPP_PORT $([ "$WHATSAPP_PORT" != "3000" ] && echo "(default: 3000)" || echo "")"
 echo "  • Dashboard:           $DASHBOARD_PORT $([ "$DASHBOARD_PORT" != "8507" ] && echo "(default: 8507)" || echo "")"
+echo "  • Chat Tester:         $CHAT_TESTER_PORT $([ "$CHAT_TESTER_PORT" != "3001" ] && echo "(default: 3001)" || echo "")"
 echo "  • Database Viewer:     $DB_VIEWER_PORT $([ "$DB_VIEWER_PORT" != "8502" ] && echo "(default: 8502)" || echo "")"
 echo ""
 
